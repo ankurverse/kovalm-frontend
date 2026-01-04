@@ -1,0 +1,30 @@
+<html>
+<head>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded-lg w-96">
+    <h1 class="text-2xl font-bold mb-4 text-center">Signup</h1>
+
+    <input id="name" placeholder="Name" class="border p-2 w-full mb-2">
+    <input id="email" placeholder="Email" class="border p-2 w-full mb-2">
+    <input id="phone" placeholder="Phone" class="border p-2 w-full mb-2">
+    <input id="room" placeholder="B-123(BoysHostel) / G-123(GirlsHostel)" class="border p-2 w-full mb-2">
+    <input id="password" type="password" placeholder="Password" class="border p-2 w-full mb-2">
+
+    <button onclick="signup()" class="bg-blue-600 text-white w-full p-2 rounded">
+      Signup
+    </button>
+
+    <p class="text-center mt-3">
+      Already have account? 
+      <a href="login.html" class="text-blue-500">Login</a>
+    </p>
+
+    <p id="msg" class="mt-2 text-center text-red-600"></p>
+  </div>
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .glow {
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
+  }
+</style>
+
+</head>
+
+<body class="bg-gray-900 text-white">
+
+<!-- Header -->
+<div class="p-4 bg-gray-800 flex justify-between items-center shadow-lg border-b border-yellow-400 glow">
+
+  <div>
+    <h1 class="text-2xl font-bold text-yellow-400">Kovalm Café</h1>
+    <p class="text-gray-300 text-sm">Serving smiles & snacks</p>
+  </div>
+
+  <!-- RIGHT SIDE BUTTONS -->
+  <div class="flex gap-2">
+    <button onclick="window.location.href='profile.html'"
+      class="bg-gray-700 text-white px-3 py-1 rounded font-bold border border-yellow-400">
+      My Profile
+    </button>
+
+    <button onclick="window.location.href='orders.html'"
+      class="bg-yellow-400 text-black px-3 py-1 rounded font-bold">
+      My Orders
+    </button>
+  </div>
+
+</div>
+
+
+<div id="products" class="grid grid-cols-2 gap-4 p-4 pb-24"></div>
+
+<!-- Sticky Cart -->
+<div id="cartBar"
+class="fixed bottom-0 left-0 right-0 bg-yellow-400 text-black font-bold text-lg p-4 hidden flex justify-between">
+  <span id="cartCount">0 items added</span>
+
+  <button onclick="window.location.href='cart.html'"
+  class="bg-black text-white px-4 py-1 rounded">
+    View Cart 
+  </button>
+</div>
+<script src="js/config.js"></script>
+<script src="js/loading.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/index.js"></script>
+<script src="js/cart.js"></script>
+
+</body>
+</html>

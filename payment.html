@@ -1,0 +1,80 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white">
+
+<div class="p-4 bg-gray-800 flex justify-between items-center">
+  <h2 class="text-xl font-bold">Confirm & Pay</h2>
+  <button onclick="window.location.href='cart.html'"
+    class="bg-gray-600 px-3 py-1 rounded">
+    Back
+  </button>
+</div>
+
+<div class="p-4 space-y-4">
+
+  <!-- ORDER SUMMARY -->
+  <div class="bg-gray-800 p-4 rounded">
+    <h3 class="text-lg font-bold mb-2">Order Summary</h3>
+    <p id="summary" class="text-gray-300"></p>
+
+    <h3 class="font-bold mt-3">Delivery Room</h3>
+    <p id="room" class="text-yellow-300"></p>
+  </div>
+
+  <!-- PAYMENT INPUT -->
+  <div class="bg-gray-800 p-4 rounded">
+    <h3 class="font-bold mb-2">Payment</h3>
+
+    <p class="text-gray-300 mb-2">
+      After completing UPI payment, enter the UTR below:
+    </p>
+
+  <!-- UPI DETAILS -->
+<div class="bg-gray-900 p-3 rounded mb-4 text-center border border-green-500">
+  <p class="font-bold text-green-400 mb-2">Pay to Kovalm Café</p>
+
+  <!-- QR CODE -->
+  <img
+    src="assets/upi-qr.png"
+    alt="UPI QR"
+    class="mx-auto w-48 h-48 mb-2 rounded bg-white p-2"
+  />
+
+  <!-- UPI ID -->
+  <p class="text-gray-300">
+    UPI ID:
+    <span class="font-bold text-yellow-400">
+      kovalmcafe@upi
+    </span>
+  </p>
+
+  <p class="text-xs text-gray-400 mt-1">
+    Pay using any UPI app (GPay / PhonePe / Paytm)
+  </p>
+</div>
+
+
+    <input
+      id="utr"
+      placeholder="Enter UTR (min 8 characters)"
+      class="w-full p-2 rounded text-black mb-3"
+    />
+
+    <button
+      onclick="submitPaymentProof()"
+      class="bg-green-500 text-black w-full py-2 rounded text-lg font-bold">
+      I HAVE PAID
+    </button>
+
+    <p id="msg" class="text-green-400 mt-2 text-center"></p>
+  </div>
+
+</div>
+<script src="js/config.js"></script>
+<script src="js/payment.js"></script>
+</body>
+</html>

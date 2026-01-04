@@ -1,0 +1,53 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white">
+
+<div class="p-4 bg-gray-800 flex justify-between">
+  <h2 class="text-xl font-bold">My Cart</h2>
+
+  <button onclick="window.location.href='index.html'"
+  class="bg-gray-600 px-3 py-1 rounded">
+    Back
+  </button>
+</div>
+
+<div id="cartItems" class="p-4"></div>
+
+<div class="p-4 bg-gray-800 mt-4">
+  <h2 class="text-lg font-bold mb-2">Bill Details</h2>
+
+  <div class="flex justify-between">
+    <span>Subtotal</span>
+    <span id="subtotal">₹0</span>
+  </div>
+
+  <div class="flex justify-between">
+    <span>Delivery Charge</span>
+    <span>₹4</span>
+  </div>
+
+  <div class="flex justify-between font-bold mt-2">
+    <span>Total</span>
+    <span id="total">₹0</span>
+  </div>
+
+  <p id="warning" class="text-red-400 mt-2 hidden">
+    Minimum order amount is ₹40 to continue.
+  </p>
+
+  <button id="placeBtn"
+  onclick="proceedToCheckout()"
+  class="bg-yellow-400 text-black w-full mt-3 py-2 rounded disabled:opacity-40">
+    Proceed to Checkout
+  </button>
+</div>
+<script src="js/config.js"></script>
+<script src="js/cartPage.js"></script>
+
+</body>
+</html>
