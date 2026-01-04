@@ -57,14 +57,44 @@
 />
 
 <!-- CATEGORY BUTTONS -->
-<div class="flex gap-2 overflow-x-auto px-4 mb-3">
-  <button onclick="setCategory('all')" class="bg-yellow-400 text-black px-3 py-1 rounded font-bold">All</button>
-  <button onclick="setCategory('snacks')" class="bg-gray-700 px-3 py-1 rounded">Snacks</button>
-  <button onclick="setCategory('beverages')" class="bg-gray-700 px-3 py-1 rounded">Beverages</button>
-  <button onclick="setCategory('stationery')" class="bg-gray-700 px-3 py-1 rounded">Stationery</button>
-  <button onclick="setCategory('daily-essentials')" class="bg-gray-700 px-3 py-1 rounded">Daily</button>
-  <button onclick="setCategory('ice-cream')" class="bg-gray-700 px-3 py-1 rounded">Ice Cream</button>
+<div class="flex gap-2 overflow-x-auto px-4 mb-3" id="categoryBar">
+  <button data-category="all"
+    onclick="setCategory('all')"
+    class="category-btn bg-yellow-400 text-black px-3 py-1 rounded font-bold">
+    All
+  </button>
+
+  <button data-category="snacks"
+    onclick="setCategory('snacks')"
+    class="category-btn bg-gray-700 px-3 py-1 rounded">
+    Snacks
+  </button>
+
+  <button data-category="beverages"
+    onclick="setCategory('beverages')"
+    class="category-btn bg-gray-700 px-3 py-1 rounded">
+    Beverages
+  </button>
+
+  <button data-category="stationery"
+    onclick="setCategory('stationery')"
+    class="category-btn bg-gray-700 px-3 py-1 rounded">
+    Stationery
+  </button>
+
+  <button data-category="daily-essentials"
+    onclick="setCategory('daily-essentials')"
+    class="category-btn bg-gray-700 px-3 py-1 rounded">
+    Daily
+  </button>
+
+  <button data-category="ice-cream"
+    onclick="setCategory('ice-cream')"
+    class="category-btn bg-gray-700 px-3 py-1 rounded">
+    Ice Cream
+  </button>
 </div>
+
 
 
 
