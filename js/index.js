@@ -147,7 +147,8 @@ function updateCartBar() {
     bar.classList.add("hidden");
   } else {
     bar.classList.remove("hidden");
-    count.innerText = `${cart.length} items added`;
+    count.innerText = `${cart.reduce((s,i)=>s+i.qty,0)} items added`;
+
   }
 }
 

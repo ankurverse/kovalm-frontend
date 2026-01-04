@@ -102,11 +102,18 @@
 
 
 
-<div id="products" class="grid grid-cols-2 gap-4 p-4 pb-24"></div>
+<div id="products" class="grid grid-cols-2 gap-4 p-4 pb-32"></div>
 
 <!-- Sticky Cart -->
-<div id="cartBar"
-class="fixed bottom-0 left-0 right-0 bg-yellow-400 text-black font-bold text-lg p-4 hidden flex justify-between">
+<div
+  id="cartBar"
+  class="fixed bottom-0 left-0 right-0 z-50
+         bg-yellow-400 text-black font-bold text-lg
+         p-4 flex justify-between items-center
+         hidden"
+  style="padding-bottom: env(safe-area-inset-bottom);"
+>
+
   <span id="cartCount">0 items added</span>
 
   <button onclick="window.location.href='cart.html'"
