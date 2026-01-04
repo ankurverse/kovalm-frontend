@@ -1,110 +1,124 @@
 let token = localStorage.getItem("token");
-if(!token){
+if (!token) {
   window.location.href = "login.html";
 }
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-function saveCart(){
+// 🔹 NEW FLAG (IMPORTANT)
+let isFirstLoad = true;
+
+function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-async function loadProducts(){
+async function loadProducts() {
+  try {
+    // ✅ Show loader ONLY on first load
+    if (isFirstLoad) {
+      showLoading();
+    }
 
-  showLoading();
+    const res = await fetch(`${API_BASE}/products`);
+    const products = await res.json();
 
-  const res = await fetch(`${API_BASE}/products`);
+    const container = document.getElementById("products");
 
-  const products = await res.json();
+    // ❗ Clear only when rendering (no loader flicker)
+    container.innerHTML = "";
 
-  hideLoading();
+    products.forEach(p => {
+      const inCart = cart.find(i => i._id === p._id);
+      p.qty = inCart ? inCart.qty : 0;
 
-  const container = document.getElementById("products");
-  container.innerHTML = "";
+      container.innerHTML += `
+        <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-yellow-400 glow">
+          
+          <img src="${p.image}" class="h-28 w-full object-cover">
 
-  products.forEach(p => {
+          <div class="p-3">
+            <h2 class="font-bold text-lg">${p.name}</h2>
+            <p class="text-gray-400 text-sm">${p.description}</p>
 
-    const inCart = cart.find(i => i._id === p._id);
-    p.qty = inCart ? inCart.qty : 0;
+            <div class="flex justify-between items-center mt-2">
+              <span class="text-yellow-400 font-bold">₹${p.price}</span>
 
-    container.innerHTML += `
-      <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-yellow-400 glow">
-        
-        <img src="${p.image}" class="h-28 w-full object-cover">
+              ${
+                !p.available
+                ? `<span class="bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm font-bold">
+                     Unavailable
+                   </span>`
+                : p.qty
+                ? `
+                  <div class="flex items-center gap-2">
+                    <button onclick="decrease('${p._id}')" class="bg-red-500 px-2 rounded">−</button>
+                    <span class="text-lg">${p.qty}</span>
+                    <button onclick="increase('${p._id}')" class="bg-green-500 px-2 rounded">+</button>
+                  </div>
+                `
+                : `
+                  <button onclick="addToCart('${p._id}','${p.name}',${p.price},${p.available})" 
+                    class="bg-yellow-400 text-black font-bold px-3 py-1 rounded">
+                    Add +
+                  </button>
+                `
+              }
 
-        <div class="p-3">
-          <h2 class="font-bold text-lg">${p.name}</h2>
-          <p class="text-gray-400 text-sm">${p.description}</p>
-
-          <div class="flex justify-between items-center mt-2">
-            <span class="text-yellow-400 font-bold">₹${p.price}</span>
-
-            ${
-              !p.available
-              ? `<span class="bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm font-bold">
-                   Unavailable
-                 </span>`
-              : p.qty
-              ? `
-                <div class="flex items-center gap-2">
-                  <button onclick="decrease('${p._id}')" class="bg-red-500 px-2 rounded">−</button>
-                  <span class="text-lg">${p.qty}</span>
-                  <button onclick="increase('${p._id}')" class="bg-green-500 px-2 rounded">+</button>
-                </div>
-              `
-              : `
-                <button onclick="addToCart('${p._id}','${p.name}',${p.price},${p.available})" 
-                  class="bg-yellow-400 text-black font-bold px-3 py-1 rounded">
-                  Add +
-                </button>
-              `
-            }
-
+            </div>
           </div>
+
         </div>
+      `;
+    });
 
-      </div>
-    `;
-  });
+    updateCartBar();
 
-  updateCartBar();
+    // ✅ Hide loader AFTER first successful load
+    if (isFirstLoad) {
+      hideLoading();
+      isFirstLoad = false;
+    }
+
+  } catch (err) {
+    console.error("Failed to load products", err);
+    if (isFirstLoad) hideLoading();
+  }
 }
 
-function addToCart(id, name, price, available){
-  // 🔒 FINAL SAFETY CHECK
-  if(!available){
+function addToCart(id, name, price, available) {
+  if (!available) {
     alert("This item is currently unavailable");
     return;
   }
 
-  cart.push({ _id:id, name, price, qty:1 });
+  cart.push({ _id: id, name, price, qty: 1 });
   saveCart();
   showToast("Added to cart");
   loadProducts();
 }
 
-function increase(id){
-  let item = cart.find(i=>i._id===id);
+function increase(id) {
+  let item = cart.find(i => i._id === id);
   item.qty++;
   saveCart();
   loadProducts();
 }
 
-function decrease(id){
-  let item = cart.find(i=>i._id===id);
+function decrease(id) {
+  let item = cart.find(i => i._id === id);
   item.qty--;
-  if(item.qty<=0){
-    cart = cart.filter(i=>i._id!==id);
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i._id !== id);
   }
   saveCart();
   loadProducts();
 }
 
-function updateCartBar(){
+function updateCartBar() {
   const bar = document.getElementById("cartBar");
   const count = document.getElementById("cartCount");
 
-  if(cart.length === 0){
+  if (cart.length === 0) {
     bar.classList.add("hidden");
   } else {
     bar.classList.remove("hidden");
@@ -112,9 +126,10 @@ function updateCartBar(){
   }
 }
 
+// 🔹 INITIAL LOAD (with loader)
 loadProducts();
 
-// 🔄 AUTO REFRESH INVENTORY EVERY 5 SECONDS
+// 🔄 SILENT BACKGROUND REFRESH (NO LOADER)
 setInterval(() => {
   loadProducts();
 }, 5000);
