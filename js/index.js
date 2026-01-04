@@ -35,8 +35,10 @@ async function loadProducts() {
 // ================= FILTER LOGIC =================
 function setCategory(cat) {
   selectedCategory = cat;
+  highlightCategoryButton(cat);
   applyFilters();
 }
+
 
 function applyFilters() {
   const searchText = document
@@ -154,3 +156,20 @@ loadProducts();
 
 // 🔄 Silent background refresh
 setInterval(loadProducts, 5000);
+
+
+function highlightCategoryButton(activeCategory) {
+  const buttons = document.querySelectorAll(".category-btn");
+
+  buttons.forEach(btn => {
+    const cat = btn.getAttribute("data-category");
+
+    if (cat === activeCategory) {
+      btn.classList.remove("bg-gray-700");
+      btn.classList.add("bg-yellow-400", "text-black", "font-bold");
+    } else {
+      btn.classList.remove("bg-yellow-400", "text-black", "font-bold");
+      btn.classList.add("bg-gray-700");
+    }
+  });
+}
