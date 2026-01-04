@@ -4,47 +4,82 @@ if (!token) {
 }
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-// 🔹 NEW FLAG (IMPORTANT)
+let allProducts = [];
+let selectedCategory = "all";
 let isFirstLoad = true;
 
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
+// ================= LOAD PRODUCTS =================
 async function loadProducts() {
   try {
-    // ✅ Show loader ONLY on first load
-    if (isFirstLoad) {
-      showLoading();
-    }
+    if (isFirstLoad) showLoading();
 
     const res = await fetch(`${API_BASE}/products`);
-    const products = await res.json();
+    allProducts = await res.json();
 
-    const container = document.getElementById("products");
+    applyFilters();
 
-    // ❗ Clear only when rendering (no loader flicker)
-    container.innerHTML = "";
+    if (isFirstLoad) {
+      hideLoading();
+      isFirstLoad = false;
+    }
+  } catch (err) {
+    console.error("Failed to load products", err);
+    if (isFirstLoad) hideLoading();
+  }
+}
 
-    products.forEach(p => {
-      const inCart = cart.find(i => i._id === p._id);
-      p.qty = inCart ? inCart.qty : 0;
+// ================= FILTER LOGIC =================
+function setCategory(cat) {
+  selectedCategory = cat;
+  applyFilters();
+}
 
-      container.innerHTML += `
-        <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-yellow-400 glow">
-          
-          <img src="${p.image}" class="h-28 w-full object-cover">
+function applyFilters() {
+  const searchText = document
+    .getElementById("searchInput")
+    .value
+    .toLowerCase();
 
-          <div class="p-3">
-            <h2 class="font-bold text-lg">${p.name}</h2>
-            <p class="text-gray-400 text-sm">${p.description}</p>
+  const filtered = allProducts.filter(p => {
+    const matchCategory =
+      selectedCategory === "all" || p.category === selectedCategory;
 
-            <div class="flex justify-between items-center mt-2">
-              <span class="text-yellow-400 font-bold">₹${p.price}</span>
+    const matchSearch =
+      p.name.toLowerCase().includes(searchText) ||
+      (p.description || "").toLowerCase().includes(searchText);
 
-              ${
-                !p.available
+    return matchCategory && matchSearch;
+  });
+
+  renderProducts(filtered);
+}
+
+// ================= RENDER =================
+function renderProducts(products) {
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    const inCart = cart.find(i => i._id === p._id);
+    p.qty = inCart ? inCart.qty : 0;
+
+    container.innerHTML += `
+      <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-yellow-400 glow">
+        <img src="${p.image}" class="h-28 w-full object-cover">
+
+        <div class="p-3">
+          <h2 class="font-bold text-lg">${p.name}</h2>
+          <p class="text-gray-400 text-sm">${p.description || ""}</p>
+
+          <div class="flex justify-between items-center mt-2">
+            <span class="text-yellow-400 font-bold">₹${p.price}</span>
+
+            ${
+              !p.available
                 ? `<span class="bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm font-bold">
                      Unavailable
                    </span>`
@@ -57,34 +92,22 @@ async function loadProducts() {
                   </div>
                 `
                 : `
-                  <button onclick="addToCart('${p._id}','${p.name}',${p.price},${p.available})" 
+                  <button onclick="addToCart('${p._id}','${p.name}',${p.price},${p.available})"
                     class="bg-yellow-400 text-black font-bold px-3 py-1 rounded">
                     Add +
                   </button>
                 `
-              }
-
-            </div>
+            }
           </div>
-
         </div>
-      `;
-    });
+      </div>
+    `;
+  });
 
-    updateCartBar();
-
-    // ✅ Hide loader AFTER first successful load
-    if (isFirstLoad) {
-      hideLoading();
-      isFirstLoad = false;
-    }
-
-  } catch (err) {
-    console.error("Failed to load products", err);
-    if (isFirstLoad) hideLoading();
-  }
+  updateCartBar();
 }
 
+// ================= CART =================
 function addToCart(id, name, price, available) {
   if (!available) {
     alert("This item is currently unavailable");
@@ -94,24 +117,24 @@ function addToCart(id, name, price, available) {
   cart.push({ _id: id, name, price, qty: 1 });
   saveCart();
   showToast("Added to cart");
-  loadProducts();
+  applyFilters();
 }
 
 function increase(id) {
-  let item = cart.find(i => i._id === id);
+  const item = cart.find(i => i._id === id);
   item.qty++;
   saveCart();
-  loadProducts();
+  applyFilters();
 }
 
 function decrease(id) {
-  let item = cart.find(i => i._id === id);
+  const item = cart.find(i => i._id === id);
   item.qty--;
   if (item.qty <= 0) {
     cart = cart.filter(i => i._id !== id);
   }
   saveCart();
-  loadProducts();
+  applyFilters();
 }
 
 function updateCartBar() {
@@ -126,10 +149,8 @@ function updateCartBar() {
   }
 }
 
-// 🔹 INITIAL LOAD (with loader)
+// ================= START =================
 loadProducts();
 
-// 🔄 SILENT BACKGROUND REFRESH (NO LOADER)
-setInterval(() => {
-  loadProducts();
-}, 5000);
+// 🔄 Silent background refresh
+setInterval(loadProducts, 5000);
