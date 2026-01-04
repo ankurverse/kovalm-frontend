@@ -86,3 +86,9 @@ async function signup(){
     document.getElementById("msg").innerText = "Signup failed";
   }
 }
+
+function forceLogout(msg) {
+  alert(msg);
+  localStorage.clear();
+  window.location.href = "login.html";
+}
