@@ -46,10 +46,13 @@
 <!-- Header -->
 <div class="p-4 bg-gray-800 flex justify-between items-center shadow-lg border-b border-yellow-400 glow">
 
-  <div>
-    <h1 class="text-2xl font-bold text-yellow-400">Kovalm Café</h1>
-    <p class="text-gray-300 text-sm">Serving smiles & snacks</p>
-  </div>
+  <img
+  src="/icons/grocery.png"
+  alt="CollegeCart"
+  class="h-10 cursor-pointer"
+  onclick="openSplash()"
+/>
+
 
   <!-- RIGHT SIDE BUTTONS -->
   <div class="flex gap-2">
@@ -68,13 +71,17 @@
 
 
 <!-- SEARCH BAR -->
-<input
-  id="searchInput"
-  type="text"
-  placeholder="Search products..."
-  class="w-full mx-4 mt-4 mb-3 p-2 rounded text-black"
-  oninput="applyFilters()"
-/>
+<!-- SEARCH BAR -->
+<div class="px-4 mt-4 mb-3">
+  <input
+    id="searchInput"
+    type="text"
+    placeholder="Search products..."
+    class="w-full p-2 rounded text-black"
+    oninput="applyFilters()"
+  />
+</div>
+
 
 <!-- CATEGORY BUTTONS -->
 <div class="flex gap-2 overflow-x-auto px-4 mb-3" id="categoryBar">
