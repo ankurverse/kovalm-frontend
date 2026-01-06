@@ -98,3 +98,6 @@ async function proceedToCheckout(){
 }
 
 
+// 🔥 INITIAL RENDER
+renderCart();
+
