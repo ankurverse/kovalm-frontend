@@ -123,3 +123,38 @@ async function closeOrders() {
 load();
 loadOrderStatus();
 setInterval(load,5000);
+
+function sendPromo(event) {
+  const title = prompt("Enter notification title:");
+  if (!title) return;
+
+  const body = prompt("Enter notification message:");
+  if (!body) return;
+
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerText = "Sending...";
+
+  fetch(`${API_BASE}/notifications/send-promo`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    },
+    body: JSON.stringify({ title, body })
+  })
+  .then(res => res.json())
+  .then(() => {
+    alert("Notification sent successfully!");
+  })
+  .catch(err => {
+    alert("Failed to send notification");
+    console.error(err);
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerText = "📢 Send Notification";
+  });
+}
+
+
