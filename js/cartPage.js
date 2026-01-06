@@ -83,7 +83,7 @@ async function proceedToCheckout(){
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`${API_BASE}/orders/status`, {
+    const res = await fetch(`${API_BASE}/orders/owner/status`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -100,8 +100,8 @@ async function proceedToCheckout(){
     window.location.href = "payment.html";
 
   } catch (err) {
+    console.error(err);
     alert("Unable to check order status. Please try again.");
   }
 }
 
-renderCart();
