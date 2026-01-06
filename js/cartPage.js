@@ -83,25 +83,29 @@ async function proceedToCheckout(){
   try {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`${API_BASE}/orders/owner/status`, {
+    const res = await fetch(`${API_BASE}/orders/status`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    const data = await res.json();
-
-    if (!data.isAcceptingOrders) {
-      alert("🚫 The shop is currently not accepting orders. Please try later.");
+    if (!res.ok) {
+      alert("Shop status unavailable. Try again.");
       return;
     }
 
-    // ✅ Safe to go to payment page
+    const data = await res.json();
+
+    if (!data.isAcceptingOrders) {
+      alert("🚫 Shop is currently not accepting orders.");
+      return;
+    }
+
     window.location.href = "payment.html";
 
   } catch (err) {
     console.error(err);
-    alert("Unable to check order status. Please try again.");
+    alert("Network error. Try again.");
   }
 }
 
