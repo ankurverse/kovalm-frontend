@@ -81,23 +81,11 @@ function updateBill(){
 ================================ */
 async function proceedToCheckout(){
   try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(`${API_BASE}/orders/status`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) {
-      alert("Shop status unavailable. Try again.");
-      return;
-    }
-
+    const res = await fetch(`${API_BASE}/orders/status`);
     const data = await res.json();
 
     if (!data.isAcceptingOrders) {
-      alert("🚫 Shop is currently not accepting orders.");
+      alert("🚫 Shop is currently not accepting orders. Please try later.");
       return;
     }
 
@@ -105,7 +93,8 @@ async function proceedToCheckout(){
 
   } catch (err) {
     console.error(err);
-    alert("Network error. Try again.");
+    alert("Shop status unavailable. Try again.");
   }
 }
+
 
