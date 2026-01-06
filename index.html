@@ -158,6 +158,17 @@ class="cart-bar fixed left-0 right-0 bg-yellow-400 text-black font-bold text-lg 
   }
 </script>
 
+<script>
+  if ("Notification" in window) {
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then(permission => {
+        console.log("Notification permission:", permission);
+      });
+    }
+  }
+</script>
+
+
 
 </body>
 </html>

@@ -76,8 +76,32 @@ function updateBill(){
   }
 }
 
-function proceedToCheckout(){
-  window.location.href = "payment.html";
+/* ===============================
+   🔒 CHECK SHOP STATUS BEFORE PAY
+================================ */
+async function proceedToCheckout(){
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`${API_BASE}/orders/status`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (!data.isAcceptingOrders) {
+      alert("🚫 The shop is currently not accepting orders. Please try later.");
+      return;
+    }
+
+    // ✅ Safe to go to payment page
+    window.location.href = "payment.html";
+
+  } catch (err) {
+    alert("Unable to check order status. Please try again.");
+  }
 }
 
 renderCart();

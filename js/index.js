@@ -158,6 +158,10 @@ loadProducts();
 // 🔄 Silent background refresh
 setInterval(loadProducts, 5000);
 
+// 🔔 Subscribe user for push notifications
+subscribeForPush();
+
+
 
 function highlightCategoryButton(activeCategory) {
   const buttons = document.querySelectorAll(".category-btn");
@@ -173,4 +177,42 @@ function highlightCategoryButton(activeCategory) {
       btn.classList.add("bg-gray-700");
     }
   });
+}
+
+async function subscribeForPush() {
+  if (!("serviceWorker" in navigator)) return;
+
+  const registration = await navigator.serviceWorker.ready;
+
+  const existingSub = await registration.pushManager.getSubscription();
+  if (existingSub) return; // already subscribed
+
+  const response = await fetch(`${API_BASE}/notifications/public-key`);
+  const { publicKey } = await response.json();
+
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicKey)
+  });
+
+  await fetch(`${API_BASE}/notifications/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(subscription)
+  });
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }
