@@ -66,9 +66,25 @@ async function loadOrders() {
         </p>
 
         <p class="mt-2 font-bold">Items:</p>
-        ${o.items.map(i => `<p>- ${i.name} x ${i.qty}</p>`).join("")}
+        <ul class="mt-1 space-y-1">
+          ${o.items.map(i => `
+            <li class="flex justify-between">
+              <span>
+                – ${i.name}
+                <span class="text-gray-400 text-sm">
+                  (₹${i.price} × ${i.qty})
+                </span>
+              </span>
+              <span class="text-yellow-400 font-bold">
+                ₹${i.price * i.qty}
+              </span>
+            </li>
+          `).join("")}
+        </ul>
 
-        <p class="mt-2 font-bold text-lg">Total: ₹${o.totalAmount}</p>
+        <p class="mt-3 font-bold text-lg border-t border-gray-700 pt-2">
+          Total: ₹${o.totalAmount}
+        </p>
 
         <div class="mt-3 flex gap-2">
           ${o.status === "pending" ? `
