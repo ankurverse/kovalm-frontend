@@ -157,4 +157,20 @@ function sendPromo(event) {
   });
 }
 
+async function addPromo() {
+  const image = document.getElementById("promoImage").value;
+  if (!image) return alert("Image URL required");
+
+  await fetch(`${API_BASE}/promotions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ image })
+  });
+
+  alert("Poster added");
+  document.getElementById("promoImage").value = "";
+}
 

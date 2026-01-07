@@ -168,8 +168,13 @@ function updateCartBar() {
   }
 }
 
+
+
 // ================= START =================
 loadProducts();
+
+loadPromotions();
+
 
 // 🔄 Silent background refresh
 setInterval(loadProducts, 5000);
@@ -194,6 +199,31 @@ function highlightCategoryButton(activeCategory) {
     }
   });
 }
+
+
+async function loadPromotions() {
+  const res = await fetch(`${API_BASE}/promotions`);
+  const promos = await res.json();
+
+  if (promos.length === 0) return;
+
+  document.getElementById("promoSection").classList.remove("hidden");
+
+  const box = document.getElementById("promoContainer");
+  box.innerHTML = "";
+
+  promos.forEach(p => {
+    box.innerHTML += `
+      <img
+        src="${p.image}"
+        class="h-28 rounded-xl shadow-lg object-cover min-w-[260px]"
+      />
+    `;
+  });
+}
+
+
+
 
 async function subscribeForPush() {
   if (!("serviceWorker" in navigator)) return;
