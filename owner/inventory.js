@@ -43,12 +43,13 @@ async function loadProducts() {
 // ================= ADD PRODUCT =================
 async function addProduct() {
   const name = document.getElementById("name").value;
+  const description = document.getElementById("description").value;
   const price = document.getElementById("price").value;
   const category = document.getElementById("category").value;
   const image = document.getElementById("image").value;
 
   if (!name || !price || !category) {
-    alert("All fields required");
+    alert("Name, price and category are required");
     return;
   }
 
@@ -58,16 +59,25 @@ async function addProduct() {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({ name, price, category, image })
+    body: JSON.stringify({
+      name,
+      description,
+      price,
+      category,
+      image
+    })
   });
 
+  // Clear form
   document.getElementById("name").value = "";
+  document.getElementById("description").value = "";
   document.getElementById("price").value = "";
   document.getElementById("category").value = "";
   document.getElementById("image").value = "";
 
   loadProducts();
 }
+
 
 // ================= DELETE PRODUCT =================
 async function deleteProduct(id) {

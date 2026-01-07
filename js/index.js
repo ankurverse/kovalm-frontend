@@ -74,7 +74,10 @@ function renderProducts(products) {
         <img src="${p.image}" class="h-28 w-full object-cover">
 
         <div class="p-3">
-          <h2 class="font-bold text-lg">${p.name}</h2>
+          <h2 class="text-sm sm:text-base font-semibold leading-snug line-clamp-2">
+            ${p.name}
+          </h2>
+
           <p class="text-gray-400 text-sm">${p.description || ""}</p>
 
           <div class="flex justify-between items-center mt-2">
@@ -94,10 +97,11 @@ function renderProducts(products) {
                   </div>
                 `
                 : `
-                  <button onclick="addToCart('${p._id}','${p.name}',${p.price},${p.available})"
+                  <button onclick="addToCart('${p._id}')"
                     class="bg-yellow-400 text-black font-bold px-3 py-1 rounded">
                     Add +
                   </button>
+
                 `
             }
           </div>
@@ -110,17 +114,29 @@ function renderProducts(products) {
 }
 
 // ================= CART =================
-function addToCart(id, name, price, available) {
-  if (!available) {
-    alert("This item is currently unavailable");
-    return;
+function addToCart(id) {
+  const product = allProducts.find(p => p._id === id);
+  if (!product || !product.available) return;
+
+  const existing = cart.find(i => i._id === id);
+
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      qty: 1
+    });
   }
 
-  cart.push({ _id: id, name, price, qty: 1 });
   saveCart();
   showToast("Added to cart");
   applyFilters();
 }
+
+
 
 function increase(id) {
   const item = cart.find(i => i._id === id);

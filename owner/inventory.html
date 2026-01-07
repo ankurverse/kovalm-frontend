@@ -19,13 +19,41 @@
 </div>
 
 <!-- ADD PRODUCT FORM -->
+<!-- ADD PRODUCT FORM -->
 <div class="p-4 bg-gray-800 m-4 rounded">
   <h3 class="font-bold mb-3">Add New Product</h3>
 
-  <input id="name" placeholder="Product Name" class="w-full p-2 mb-2 rounded text-black">
-  <input id="price" type="number" placeholder="Price" class="w-full p-2 mb-2 rounded text-black">
-  <input id="category" placeholder="Category (snacks, stationery...)" class="w-full p-2 mb-2 rounded text-black">
-  <input id="image" placeholder="Image URL" class="w-full p-2 mb-2 rounded text-black">
+  <input
+    id="name"
+    placeholder="Product Name"
+    class="w-full p-2 mb-2 rounded text-black"
+  >
+
+  <textarea
+    id="description"
+    placeholder="Product Description"
+    class="w-full p-2 mb-2 rounded text-black"
+    rows="2"
+  ></textarea>
+
+  <input
+    id="price"
+    type="number"
+    placeholder="Price"
+    class="w-full p-2 mb-2 rounded text-black"
+  >
+
+  <input
+    id="category"
+    placeholder="Category (snacks, stationery...)"
+    class="w-full p-2 mb-2 rounded text-black"
+  >
+
+  <input
+    id="image"
+    placeholder="Image URL"
+    class="w-full p-2 mb-2 rounded text-black"
+  >
 
   <button
     onclick="addProduct()"
@@ -33,6 +61,7 @@
     Add Product
   </button>
 </div>
+
 
 <!-- PRODUCT LIST -->
 <div id="products" class="p-4 space-y-3"></div>
