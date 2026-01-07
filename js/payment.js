@@ -93,3 +93,30 @@ window.submitPaymentProof = async function () {
   document.getElementById("room").innerText =
     user.roomNo || "Not provided";
 })();
+
+// ===============================
+// 🔹 OPEN UPI APP WITH AMOUNT
+// ===============================
+window.openUPIApp = function () {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  if (!cart.length) {
+    alert("Cart empty");
+    return;
+  }
+
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const total = subtotal + 4;
+
+  const upiId = "931657773@ybl";
+  const merchant = "JBD Mart";
+
+  const upiURL =
+    `upi://pay?pa=${upiId}` +
+    `&pn=${encodeURIComponent(merchant)}` +
+    `&am=${total}` +
+    `&cu=INR` +
+    `&tn=${encodeURIComponent("Order Payment")}`;
+
+  window.location.href = upiURL;
+};
