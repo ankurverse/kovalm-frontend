@@ -128,3 +128,35 @@ async function deleteProduct(id) {
 
 // ================= INIT =================
 loadProducts();
+
+
+async function downloadInventory() {
+  const res = await fetch(`${API_BASE}/products/owner/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const products = await res.json();
+
+  if (!products.length) {
+    alert("No products found");
+    return;
+  }
+
+  let csv = "Product Name,Category,Price,Quantity,Available\n";
+
+  products.forEach(p => {
+    csv += `"${p.name}","${p.category}",${p.price},${p.quantity},${p.available ? "Yes" : "No"}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Inventory_Report.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}

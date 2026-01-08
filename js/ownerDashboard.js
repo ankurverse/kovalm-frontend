@@ -6,7 +6,7 @@ if(!token || !user || user.role !== "owner"){
   window.location.href="../login.html";
 }
 
-let chart;
+
 
 async function load(){
 
@@ -32,35 +32,12 @@ async function load(){
   document.getElementById("mOrders").innerText = d.month.orders;
   document.getElementById("mMoney").innerText = "₹" + d.month.earning;
 
-  drawChart(d.orders);
+  document.getElementById("todayEarningBig").innerText =
+  "₹" + d.today.earning;
+
+
 }
 
-function drawChart(orders){
-  let map = {};
-
-  orders.forEach(o=>{
-    let d = new Date(o.createdAt).toLocaleDateString();
-    map[d] = (map[d] || 0) + 1;
-  });
-
-  let labels = Object.keys(map);
-  let values = Object.values(map);
-
-  const ctx = document.getElementById("chart");
-  if(chart) chart.destroy();
-
-  chart = new Chart(ctx,{
-    type:"bar",
-    data:{
-      labels,
-      datasets:[{
-        label:"Orders",
-        data:values,
-        backgroundColor:"yellow"
-      }]
-    }
-  });
-}
 
 function downloadReport(){
   fetch(`${API_BASE}/orders/owner/super-analytics`,{
@@ -123,6 +100,41 @@ async function closeOrders() {
 load();
 loadOrderStatus();
 setInterval(load,5000);
+
+async function loadLowStock() {
+  const res = await fetch(`${API_BASE}/products/owner/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const products = await res.json();
+  const list = document.getElementById("lowStockList");
+  list.innerHTML = "";
+
+  const lowStock = products.filter(p => p.quantity <= 5);
+
+  if (lowStock.length === 0) {
+    list.innerHTML =
+      "<li class='text-green-400'>All products sufficiently stocked ✅</li>";
+    return;
+  }
+
+  lowStock.forEach(p => {
+    list.innerHTML += `
+      <li>
+        • ${p.name} —
+        <span class="text-yellow-400 font-bold">
+          ${p.quantity}
+        </span> left
+      </li>
+    `;
+  });
+}
+
+loadLowStock();
+setInterval(loadLowStock, 5000);
+
 
 function sendPromo(event) {
   const title = prompt("Enter notification title:");

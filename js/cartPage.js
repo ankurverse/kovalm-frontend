@@ -88,21 +88,41 @@ function updateBill(){
 ================================ */
 async function proceedToCheckout(){
   try {
-    const res = await fetch(`${API_BASE}/orders/status`);
-    const data = await res.json();
+    // 1️⃣ Check shop status
+    const statusRes = await fetch(`${API_BASE}/orders/status`);
+    const statusData = await statusRes.json();
 
-    if (!data.isAcceptingOrders) {
+    if (!statusData.isAcceptingOrders) {
       alert("🚫 Shop is currently not accepting orders. Please try later.");
       return;
     }
 
+    // 2️⃣ Validate cart stock BEFORE payment
+    const stockRes = await fetch(`${API_BASE}/orders/validate-stock`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify({ items: cartData })
+    });
+
+    const stockData = await stockRes.json();
+
+    if (!stockRes.ok) {
+      alert(stockData.msg);
+      return; // ❌ STOP HERE, do NOT go to payment
+    }
+
+    // ✅ All good → go to payment page
     window.location.href = "payment.html";
 
   } catch (err) {
     console.error(err);
-    alert("Shop status unavailable. Try again.");
+    alert("Unable to verify stock. Try again.");
   }
 }
+
 
 
 // 🔥 INITIAL RENDER

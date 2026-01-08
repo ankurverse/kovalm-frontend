@@ -18,13 +18,6 @@
   </button>
 </div>
 
-<input
-  id="quantity"
-  type="number"
-  placeholder="Initial Quantity"
-  class="w-full p-2 mb-2 rounded text-black"
-/>
-
 
 <!-- ADD PRODUCT FORM -->
 <!-- ADD PRODUCT FORM -->
@@ -36,6 +29,13 @@
     placeholder="Product Name"
     class="w-full p-2 mb-2 rounded text-black"
   >
+
+  <input
+  id="quantity"
+  type="number"
+  placeholder="Initial Quantity"
+  class="w-full p-2 mb-2 rounded text-black"
+/>
 
   <textarea
     id="description"
@@ -85,6 +85,13 @@
     Add Product
   </button>
 </div>
+
+<button
+  onclick="downloadInventory()"
+  class="bg-green-500 text-black w-full py-2 rounded font-bold mt-3"
+>
+  ⬇️ Download Stock Report
+</button>
 
 
 <!-- PRODUCT LIST -->
