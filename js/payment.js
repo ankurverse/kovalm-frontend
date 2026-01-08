@@ -88,7 +88,7 @@ window.submitPaymentProof = async function () {
   const total = subtotal + 4;
 
   document.getElementById("summary").innerText =
-    `Subtotal: ₹${subtotal} | Delivery: ₹4 | Total: ₹${total}`;
+    `Subtotal: ₹${subtotal} | Service: ₹4 | Total: ₹${total}`;
 
   document.getElementById("room").innerText =
     user.roomNo || "Not provided";
