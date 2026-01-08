@@ -19,18 +19,32 @@ async function loadProducts() {
         <div>
           <h2 class="font-bold">${p.name}</h2>
           <p class="text-sm text-gray-400">₹${p.price} • ${p.category}</p>
+          <p class="text-yellow-400 text-sm">
+            Stock: ${p.quantity}
+            ${p.quantity === 0 ? "(Out of stock)" : ""}
+          </p>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center">
           <button
-            onclick="toggleAvailability('${p._id}')"
-            class="px-3 py-1 rounded ${p.available ? 'bg-green-500' : 'bg-red-500'}">
-            ${p.available ? "Disable" : "Enable"}
+            onclick="updateStock('${p._id}', -1)"
+            class="bg-red-500 px-3 py-1 rounded font-bold"
+            ${p.quantity === 0 ? "disabled" : ""}
+          >
+            −
+          </button>
+
+          <button
+            onclick="updateStock('${p._id}', 1)"
+            class="bg-green-500 px-3 py-1 rounded font-bold"
+          >
+            +
           </button>
 
           <button
             onclick="deleteProduct('${p._id}')"
-            class="bg-red-700 px-3 py-1 rounded">
+            class="bg-red-700 px-3 py-1 rounded font-bold"
+          >
             Delete
           </button>
         </div>
@@ -40,13 +54,31 @@ async function loadProducts() {
   });
 }
 
+// ================= UPDATE STOCK =================
+async function updateStock(productId, change) {
+  await fetch(`${API_BASE}/products/owner/update-stock`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      productId,
+      change
+    })
+  });
+
+  loadProducts();
+}
+
 // ================= ADD PRODUCT =================
 async function addProduct() {
   const name = document.getElementById("name").value;
   const description = document.getElementById("description").value;
-  const price = document.getElementById("price").value;
+  const price = Number(document.getElementById("price").value);
   const category = document.getElementById("category").value;
   const image = document.getElementById("image").value;
+  const quantity = Number(document.getElementById("quantity").value || 0);
 
   if (!name || !price || !category) {
     alert("Name, price and category are required");
@@ -64,7 +96,8 @@ async function addProduct() {
       description,
       price,
       category,
-      image
+      image,
+      quantity
     })
   });
 
@@ -74,10 +107,10 @@ async function addProduct() {
   document.getElementById("price").value = "";
   document.getElementById("category").value = "";
   document.getElementById("image").value = "";
+  document.getElementById("quantity").value = "";
 
   loadProducts();
 }
-
 
 // ================= DELETE PRODUCT =================
 async function deleteProduct(id) {
@@ -85,18 +118,6 @@ async function deleteProduct(id) {
 
   await fetch(`${API_BASE}/products/owner/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  loadProducts();
-}
-
-// ================= TOGGLE AVAILABILITY =================
-async function toggleAvailability(id) {
-  await fetch(`${API_BASE}/products/owner/${id}/availability`, {
-    method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`
     }
