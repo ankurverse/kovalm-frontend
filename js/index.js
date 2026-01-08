@@ -67,41 +67,54 @@ function renderProducts(products) {
 
   products.forEach(p => {
     const inCart = cart.find(i => i._id === p._id);
-    p.qty = inCart ? inCart.qty : 0;
+    const qtyInCart = inCart ? inCart.qty : 0;
+    const remaining = p.quantity - qtyInCart;
 
     container.innerHTML += `
       <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-yellow-400 glow">
         <img src="${p.image}" class="h-28 w-full object-cover">
 
         <div class="p-3">
-          <h2 class="text-sm sm:text-base font-semibold leading-snug line-clamp-2">
-            ${p.name}
-          </h2>
-
+          <h2 class="text-sm sm:text-base font-semibold">${p.name}</h2>
           <p class="text-gray-400 text-sm">${p.description || ""}</p>
+
+          <p class="text-xs mt-1 ${
+            p.quantity > 0 ? "text-yellow-400" : "text-red-400"
+          }">
+            ${
+              p.quantity > 0
+                ? `Only ${remaining} left`
+                : "Out of stock"
+            }
+          </p>
 
           <div class="flex justify-between items-center mt-2">
             <span class="text-yellow-400 font-bold">₹${p.price}</span>
 
             ${
-              !p.available
+              p.quantity <= 0
                 ? `<span class="bg-gray-600 text-gray-300 px-3 py-1 rounded text-sm font-bold">
-                     Unavailable
+                    Unavailable
                    </span>`
-                : p.qty
+                : qtyInCart > 0
                 ? `
                   <div class="flex items-center gap-2">
                     <button onclick="decrease('${p._id}')" class="bg-red-500 px-2 rounded">−</button>
-                    <span class="text-lg">${p.qty}</span>
-                    <button onclick="increase('${p._id}')" class="bg-green-500 px-2 rounded">+</button>
+                    <span class="text-lg">${qtyInCart}</span>
+                    <button 
+                      onclick="increase('${p._id}')"
+                      class="bg-green-500 px-2 rounded"
+                      ${qtyInCart >= p.quantity ? "disabled" : ""}>
+                      +
+                    </button>
                   </div>
                 `
                 : `
-                  <button onclick="addToCart('${p._id}')"
+                  <button
+                    onclick="addToCart('${p._id}')"
                     class="bg-yellow-400 text-black font-bold px-3 py-1 rounded">
                     Add +
                   </button>
-
                 `
             }
           </div>
@@ -113,26 +126,31 @@ function renderProducts(products) {
   updateCartBar();
 }
 
+
 // ================= CART =================
 function addToCart(id) {
   const product = allProducts.find(p => p._id === id);
-  if (!product || !product.available) return;
+  if (!product || product.quantity <= 0) return;
 
   const existing = cart.find(i => i._id === id);
 
   if (existing) {
+    if (existing.qty >= product.quantity) {
+      alert(`Only ${product.quantity} available`);
+      return;
+    }
     existing.qty++;
   } else {
     cart.push({
       _id: product._id,
       name: product.name,
       price: product.price,
-      qty: 1
+      qty: 1,
+      quantity: product.quantity
     });
   }
 
   saveCart();
-  showToast("Added to cart");
   applyFilters();
 }
 
@@ -140,10 +158,18 @@ function addToCart(id) {
 
 function increase(id) {
   const item = cart.find(i => i._id === id);
+  const product = allProducts.find(p => p._id === id);
+
+  if (item.qty >= product.quantity) {
+    alert(`Only ${product.quantity} available`);
+    return;
+  }
+
   item.qty++;
   saveCart();
   applyFilters();
 }
+
 
 function decrease(id) {
   const item = cart.find(i => i._id === id);

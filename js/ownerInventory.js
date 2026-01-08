@@ -6,16 +6,12 @@ if (!token || !user || user.role !== "owner") {
   window.location.href = "../login.html";
 }
 
-// 🔹 LOAD PRODUCTS
 async function loadProducts() {
   const res = await fetch(`${API_BASE}/products`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const products = await res.json();
-
   const box = document.getElementById("products");
   box.innerHTML = "";
 
@@ -26,34 +22,33 @@ async function loadProducts() {
           <div>
             <h2 class="text-lg font-bold">${p.name}</h2>
             <p class="text-gray-400">₹${p.price}</p>
+            <p class="text-yellow-400 text-sm">Stock: ${p.quantity}</p>
           </div>
 
-          <button
-            onclick="toggleProduct('${p._id}')"
-            class="px-3 py-1 rounded font-bold ${
-              p.available ? "bg-green-500" : "bg-red-500"
-            }">
-            ${p.available ? "Disable" : "Enable"}
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="updateStock('${p._id}', -1)"
+              class="bg-red-500 px-3 py-1 rounded">−</button>
+
+            <button onclick="updateStock('${p._id}', 1)"
+              class="bg-green-500 px-3 py-1 rounded">+</button>
+          </div>
         </div>
       </div>
     `;
   });
 }
 
-// 🔹 TOGGLE PRODUCT
-async function toggleProduct(id) {
-  await fetch(`${API_BASE}/products/toggle`, {
-    method: "POST",
+async function updateStock(productId, change) {
+  await fetch(`${API_BASE}/products/update-stock`, {
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({ productId: id })
+    body: JSON.stringify({ productId, change })
   });
 
   loadProducts();
 }
 
-// INITIAL LOAD
 loadProducts();

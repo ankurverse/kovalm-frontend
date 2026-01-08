@@ -43,10 +43,17 @@ function renderCart(){
 
 function increaseItem(id){
   let item = cartData.find(i => i._id === id);
+
+  if (item.qty >= item.quantity) {
+    alert(`Only ${item.quantity} available`);
+    return;
+  }
+
   item.qty++;
   saveCart();
   renderCart();
 }
+
 
 function decreaseItem(id){
   let item = cartData.find(i => i._id === id);
