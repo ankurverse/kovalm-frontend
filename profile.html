@@ -9,6 +9,19 @@
 
 <style>
  body { font-family: 'Poppins'; }
+
+ .profile-image-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-cutout {
+  width: 220px;
+  max-width: 80%;
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6));
+}
+
 </style>
 
 </head>
@@ -32,6 +45,16 @@
 
   </div>
 </div>
+
+<!-- PROFILE IMAGE CUTOUT -->
+<div class="profile-image-container">
+  <img
+    src="https://res.cloudinary.com/dtg0seibb/image/upload/v1768080365/ChatGPT_Image_Jan_11_2026_at_02_55_22_AM_cbl7cs.jpg"
+    alt="Profile Character"
+    class="profile-cutout"
+  />
+</div>
+
 
 <script>
 let user = JSON.parse(localStorage.getItem("user"));
