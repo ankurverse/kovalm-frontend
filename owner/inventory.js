@@ -190,3 +190,19 @@ async function uploadExcel() {
   fileInput.value = "";
   loadProducts();
 }
+
+
+async function undoLastUpload() {
+  if (!confirm("Undo last Excel stock upload?")) return;
+
+  const res = await fetch(`${API_BASE}/products/owner/undo-last-upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await res.json();
+  alert(data.msg);
+  loadProducts();
+}
