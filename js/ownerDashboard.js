@@ -69,8 +69,8 @@ async function loadOrderStatus() {
 
   document.getElementById("orderStatus").innerText =
     data.isAcceptingOrders
-      ? "🟢 Cafe is OPEN for orders"
-      : "🔴 Cafe is CLOSED";
+      ? "🟢 JBD Mart is OPEN for orders"
+      : "🔴 JBD Mart is CLOSED";
 }
 
 async function openOrders() {
