@@ -1,50 +1,57 @@
 const token = localStorage.getItem("token");
 
-// ================= LOAD PRODUCTS =================
+let allProducts = [];
+let editProductId = null;
+
+/* ================= LOAD PRODUCTS ================= */
 async function loadProducts() {
   const res = await fetch(`${API_BASE}/products/owner/all`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
-  const products = await res.json();
+  allProducts = await res.json();
+  renderProducts(allProducts);
+}
+
+/* ================= RENDER PRODUCTS ================= */
+function renderProducts(products) {
   const box = document.getElementById("products");
   box.innerHTML = "";
 
   products.forEach(p => {
     box.innerHTML += `
-      <div class="bg-gray-800 p-4 rounded border border-yellow-400 flex justify-between items-center">
+      <div class="bg-gray-800 p-4 rounded border border-gray-700 flex justify-between items-center">
 
         <div>
-          <h2 class="font-bold">${p.name}</h2>
+          <h2 class="font-bold text-lg">${p.name}</h2>
           <p class="text-sm text-gray-400">₹${p.price} • ${p.category}</p>
           <p class="text-yellow-400 text-sm">
-            Stock: ${p.quantity}
-            ${p.quantity === 0 ? "(Out of stock)" : ""}
+            Stock: ${p.quantity} ${p.quantity === 0 ? "(Out of stock)" : ""}
           </p>
         </div>
 
         <div class="flex gap-2 items-center">
-          <button
-            onclick="updateStock('${p._id}', -1)"
+          <button onclick="updateStock('${p._id}', -1)"
             class="bg-red-500 px-3 py-1 rounded font-bold"
-            ${p.quantity === 0 ? "disabled" : ""}
-          >
-            −
+            ${p.quantity === 0 ? "disabled" : ""}>−</button>
+
+          <button onclick="updateStock('${p._id}', 1)"
+            class="bg-green-500 px-3 py-1 rounded font-bold">+</button>
+
+          <button onclick="openEditModal(
+            '${p._id}',
+            '${escapeQuotes(p.name)}',
+            '${escapeQuotes(p.description || "")}',
+            ${p.price},
+            '${p.category}',
+            '${p.image || ""}'
+          )"
+            class="bg-blue-500 px-3 py-1 rounded font-bold">
+            Edit
           </button>
 
-          <button
-            onclick="updateStock('${p._id}', 1)"
-            class="bg-green-500 px-3 py-1 rounded font-bold"
-          >
-            +
-          </button>
-
-          <button
-            onclick="deleteProduct('${p._id}')"
-            class="bg-red-700 px-3 py-1 rounded font-bold"
-          >
+          <button onclick="deleteProduct('${p._id}')"
+            class="bg-red-700 px-3 py-1 rounded font-bold">
             Delete
           </button>
         </div>
@@ -54,7 +61,21 @@ async function loadProducts() {
   });
 }
 
-// ================= UPDATE STOCK =================
+/* ================= SEARCH ================= */
+function filterProducts() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const filtered = allProducts.filter(p =>
+    p.name.toLowerCase().includes(q)
+  );
+  renderProducts(filtered);
+}
+
+/* ================= ESCAPE ================= */
+function escapeQuotes(str) {
+  return str.replace(/'/g, "\\'");
+}
+
+/* ================= UPDATE STOCK ================= */
 async function updateStock(productId, change) {
   await fetch(`${API_BASE}/products/owner/update-stock`, {
     method: "PATCH",
@@ -62,16 +83,13 @@ async function updateStock(productId, change) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({
-      productId,
-      change
-    })
+    body: JSON.stringify({ productId, change })
   });
 
   loadProducts();
 }
 
-// ================= ADD PRODUCT =================
+/* ================= ADD PRODUCT ================= */
 async function addProduct() {
   const name = document.getElementById("name").value;
   const description = document.getElementById("description").value;
@@ -91,118 +109,116 @@ async function addProduct() {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({
-      name,
-      description,
-      price,
-      category,
-      image,
-      quantity
-    })
+    body: JSON.stringify({ name, description, price, category, image, quantity })
   });
 
-  // Clear form
-  document.getElementById("name").value = "";
-  document.getElementById("description").value = "";
-  document.getElementById("price").value = "";
-  document.getElementById("category").value = "";
-  document.getElementById("image").value = "";
-  document.getElementById("quantity").value = "";
+  document.querySelectorAll("#name,#description,#price,#category,#image,#quantity")
+    .forEach(i => i.value = "");
 
   loadProducts();
 }
 
-// ================= DELETE PRODUCT =================
+/* ================= DELETE ================= */
 async function deleteProduct(id) {
   if (!confirm("Delete this product?")) return;
 
   await fetch(`${API_BASE}/products/owner/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   loadProducts();
 }
 
-// ================= INIT =================
-loadProducts();
+/* ================= EDIT MODAL ================= */
+function openEditModal(id, name, description, price, category, image) {
+  editProductId = id;
 
+  document.getElementById("editName").value = name;
+  document.getElementById("editDescription").value = description;
+  document.getElementById("editPrice").value = price;
+  document.getElementById("editCategory").value = category;
+  document.getElementById("editImage").value = image;
 
-async function downloadInventory() {
-  const res = await fetch(`${API_BASE}/products/owner/all`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  const products = await res.json();
-
-  if (!products.length) {
-    alert("No products found");
-    return;
-  }
-
-  let csv = "Product Name,Category,Price,Quantity,Available\n";
-
-  products.forEach(p => {
-    csv += `"${p.name}","${p.category}",${p.price},${p.quantity},${p.available ? "Yes" : "No"}\n`;
-  });
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "Inventory_Report.csv";
-  a.click();
-
-  URL.revokeObjectURL(url);
+  document.getElementById("editModal").classList.remove("hidden");
 }
 
+function closeEditModal() {
+  document.getElementById("editModal").classList.add("hidden");
+}
+
+async function saveEdit() {
+  const payload = {
+    name: document.getElementById("editName").value,
+    description: document.getElementById("editDescription").value,
+    price: Number(document.getElementById("editPrice").value),
+    category: document.getElementById("editCategory").value,
+    image: document.getElementById("editImage").value
+  };
+
+  await fetch(`${API_BASE}/products/owner/${editProductId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  closeEditModal();
+  loadProducts();
+}
+
+/* ================= EXCEL ================= */
 async function uploadExcel() {
-  const fileInput = document.getElementById("excelFile");
-  const file = fileInput.files[0];
+  const file = document.getElementById("excelFile").files[0];
+  if (!file) return alert("Select file");
 
-  if (!file) {
-    alert("Please select an Excel file");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
+  const fd = new FormData();
+  fd.append("file", file);
 
   const res = await fetch(`${API_BASE}/products/owner/upload-stock`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    body: formData
+    headers: { Authorization: `Bearer ${token}` },
+    body: fd
   });
 
   const data = await res.json();
-
-  alert(
-    `Stock Update Done ✅\nUpdated: ${data.updated}\nSkipped: ${data.skipped}`
-  );
-
-  fileInput.value = "";
+  alert(`Updated: ${data.updated}, Skipped: ${data.skipped}`);
   loadProducts();
 }
 
-
 async function undoLastUpload() {
-  if (!confirm("Undo last Excel stock upload?")) return;
+  if (!confirm("Undo last upload?")) return;
 
   const res = await fetch(`${API_BASE}/products/owner/undo-last-upload`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const data = await res.json();
   alert(data.msg);
   loadProducts();
 }
+
+/* ================= DOWNLOAD ================= */
+async function downloadInventory() {
+  const res = await fetch(`${API_BASE}/products/owner/all`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const products = await res.json();
+  let csv = "Name,Category,Price,Quantity\n";
+  products.forEach(p => {
+    csv += `"${p.name}","${p.category}",${p.price},${p.quantity}\n`;
+  });
+
+  const blob = new Blob([csv]);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "inventory.csv";
+  a.click();
+}
+
+/* ================= INIT ================= */
+loadProducts();
