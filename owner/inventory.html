@@ -86,6 +86,24 @@
   </button>
 </div>
 
+<div class="p-4 bg-gray-800 m-4 rounded border border-yellow-400">
+  <h3 class="font-bold mb-3">Upload Stock Excel</h3>
+
+  <input
+    type="file"
+    id="excelFile"
+    accept=".xlsx,.xls,.csv"
+    class="w-full p-2 rounded text-black mb-2"
+  >
+
+  <button
+    onclick="uploadExcel()"
+    class="bg-green-500 text-black w-full py-2 rounded font-bold">
+    Upload & Update Stock
+  </button>
+</div>
+
+
 <button
   onclick="downloadInventory()"
   class="bg-green-500 text-black w-full py-2 rounded font-bold mt-3"

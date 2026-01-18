@@ -160,3 +160,33 @@ async function downloadInventory() {
 
   URL.revokeObjectURL(url);
 }
+
+async function uploadExcel() {
+  const fileInput = document.getElementById("excelFile");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please select an Excel file");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_BASE}/products/owner/upload-stock`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  const data = await res.json();
+
+  alert(
+    `Stock Update Done ✅\nUpdated: ${data.updated}\nSkipped: ${data.skipped}`
+  );
+
+  fileInput.value = "";
+  loadProducts();
+}
