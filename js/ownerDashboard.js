@@ -103,34 +103,46 @@ setInterval(load,5000);
 
 async function loadLowStock() {
   const res = await fetch(`${API_BASE}/products/owner/all`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const products = await res.json();
-  const list = document.getElementById("lowStockList");
-  list.innerHTML = "";
+  const table = document.getElementById("lowStockTable");
+  table.innerHTML = "";
 
   const lowStock = products.filter(p => p.quantity <= 5);
 
   if (lowStock.length === 0) {
-    list.innerHTML =
-      "<li class='text-green-400'>All products sufficiently stocked ✅</li>";
+    table.innerHTML = `
+      <tr>
+        <td colspan="3" class="py-3 text-center text-green-400">
+          All products sufficiently stocked ✅
+        </td>
+      </tr>
+    `;
     return;
   }
 
   lowStock.forEach(p => {
-    list.innerHTML += `
-      <li>
-        • ${p.name} —
-        <span class="text-yellow-400 font-bold">
+    const status =
+      p.quantity === 0
+        ? `<span class="px-2 py-1 text-xs rounded bg-red-600 text-white">Out</span>`
+        : `<span class="px-2 py-1 text-xs rounded bg-yellow-500 text-black">Low</span>`;
+
+    table.innerHTML += `
+      <tr>
+        <td class="py-2">${p.name}</td>
+        <td class="py-2 text-center font-bold text-yellow-400">
           ${p.quantity}
-        </span> left
-      </li>
+        </td>
+        <td class="py-2 text-center">
+          ${status}
+        </td>
+      </tr>
     `;
   });
 }
+
 
 loadLowStock();
 setInterval(loadLowStock, 5000);
