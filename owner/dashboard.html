@@ -1,135 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Owner Dashboard – JBD Mart</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    body { font-family: Inter, sans-serif; }
-  </style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+ body { font-family: Poppins; }
+ .glow { box-shadow: 0 0 25px rgba(255,255,0,0.3); }
+</style>
 </head>
 
-<body class="bg-slate-900 text-slate-100">
+<button onclick="window.location.href='inventory.html'"
+  class="bg-yellow-500 text-black px-3 py-1 rounded font-bold">
+  Inventory
+</button>
 
-<!-- TOP NAV -->
-<header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center">
-  <h1 class="text-xl font-bold text-yellow-400">JBD Mart · Owner Dashboard</h1>
 
-  <div class="flex gap-3">
-    <button onclick="location.href='inventory.html'" class="px-4 py-2 bg-slate-700 rounded hover:bg-slate-600">
-      Inventory
-    </button>
-    <button onclick="location.href='orders.html'" class="px-4 py-2 bg-slate-700 rounded hover:bg-slate-600">
+
+<div class="bg-gray-800 p-3 text-center border border-yellow-400 glow mt-3">
+  <p id="orderStatus" class="font-bold mb-2"></p>
+
+  <button onclick="openOrders()"
+    class="bg-green-500 px-4 py-1 rounded font-bold mr-2">
+    Start Taking Orders
+  </button>
+
+  <button onclick="closeOrders()"
+    class="bg-red-500 px-4 py-1 rounded font-bold">
+    Stop Taking Orders
+  </button>
+</div>
+
+
+
+
+
+<body class="bg-gray-900 text-white">
+
+  <button
+  onclick="sendPromo(event)"
+  class="bg-yellow-400 text-black px-4 py-2 rounded font-bold mt-4"
+>
+  📢 Send Notification
+</button>
+
+
+<div class="bg-gray-800 p-4 rounded mb-4">
+  <h3 class="font-bold mb-2">Add Promotion Poster</h3>
+
+  <input
+    id="promoImage"
+    placeholder="Paste poster image URL"
+    class="w-full p-2 rounded text-black mb-2"
+  >
+
+  <button onclick="addPromo()"
+    class="bg-yellow-400 text-black px-4 py-2 rounded font-bold">
+    Add Poster
+  </button>
+</div>
+
+
+
+<div class="p-4 bg-gray-800 shadow-lg border-b border-yellow-400 glow flex justify-between items-center">
+  <h2 class="text-2xl font-bold text-yellow-400">JBD Mart – Dashboard</h2>
+
+  <div class="flex gap-2">
+    <button onclick="window.location.href='orders.html'" class="bg-blue-500 px-3 py-1 rounded font-bold">
       Orders
     </button>
-    <button onclick="downloadReport()" class="px-4 py-2 bg-slate-700 rounded hover:bg-slate-600">
-      Export
+
+    <button onclick="downloadReport()" class="bg-green-500 px-3 py-1 rounded font-bold">
+      Download Report
     </button>
-    <button onclick="logout()" class="px-4 py-2 bg-red-600 rounded hover:bg-red-500">
+
+    <button onclick="logout()" class="bg-red-500 px-3 py-1 rounded font-bold">
       Logout
     </button>
   </div>
-</header>
+</div>
 
-<!-- STORE STATUS -->
-<section class="max-w-7xl mx-auto px-6 mt-6">
-  <div class="bg-slate-800 rounded-lg p-4 flex justify-between items-center">
-    <div id="orderStatus" class="font-semibold"></div>
+<div class="bg-yellow-400 text-black text-center py-2 font-bold">
+  📊 Complete Business Performance Overview
+</div>
 
-    <div class="flex gap-2">
-      <button onclick="openOrders()" class="bg-green-600 px-4 py-2 rounded">
-        Start Orders
-      </button>
-      <button onclick="closeOrders()" class="bg-slate-700 px-4 py-2 rounded">
-        Stop Orders
-      </button>
-    </div>
+
+<!-- TODAY NET EARNINGS -->
+<div class="p-4">
+  <div class="bg-green-600 text-black p-6 rounded-xl text-center font-bold shadow-lg">
+    <div class="text-xl">💰 Today’s Earnings</div>
+    <div id="todayEarningBig" class="text-4xl mt-2">₹0</div>
   </div>
-</section>
+</div>
 
-<!-- KPI GRID -->
-<section class="max-w-7xl mx-auto px-6 mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-  <div class="bg-slate-800 p-4 rounded">
-    <p class="text-sm text-slate-400">Total Orders</p>
-    <p id="total" class="text-3xl font-bold">0</p>
+
+
+
+
+
+<div class="grid grid-cols-2 gap-4 p-4">
+
+  <div class="bg-gray-800 p-4 rounded-xl border border-yellow-400 glow text-center">
+    <h3>Total Orders</h3>
+    <p id="total" class="text-3xl font-bold text-yellow-400">0</p>
   </div>
 
-  <div class="bg-slate-800 p-4 rounded">
-    <p class="text-sm text-slate-400">Delivered</p>
+  <div class="bg-gray-800 p-4 rounded-xl border border-green-400 glow text-center">
+    <h3>Delivered</h3>
     <p id="delivered" class="text-3xl font-bold text-green-400">0</p>
   </div>
 
-  <div class="bg-slate-800 p-4 rounded">
-    <p class="text-sm text-slate-400">Declined</p>
+  <div class="bg-gray-800 p-4 rounded-xl border border-red-400 glow text-center">
+    <h3>Declined</h3>
     <p id="declined" class="text-3xl font-bold text-red-400">0</p>
   </div>
 
-  <div class="bg-slate-800 p-4 rounded">
-    <p class="text-sm text-slate-400">Pending</p>
+  <div class="bg-gray-800 p-4 rounded-xl border border-blue-400 glow text-center">
+    <h3>Pending</h3>
     <p id="pending" class="text-3xl font-bold text-blue-400">0</p>
   </div>
-</section>
 
-<!-- EARNINGS -->
-<section class="max-w-7xl mx-auto px-6 mt-6 grid md:grid-cols-3 gap-4">
-  <div class="bg-slate-800 p-5 rounded">
-    <p class="text-slate-400">Today</p>
-    <p id="todayOrders" class="text-xl font-bold">0</p>
-    <p id="todayMoney" class="text-green-400">₹0</p>
+</div>
+
+<div class="grid grid-cols-2 gap-4 p-4">
+
+  <div class="bg-gray-800 p-4 rounded-xl glow border border-yellow-400 text-center">
+    <h3>Today Orders</h3>
+    <p id="todayOrders" class="text-3xl font-bold text-yellow-400">0</p>
+    <p id="todayMoney" class="text-lg text-green-400">₹0</p>
   </div>
 
-  <div class="bg-slate-800 p-5 rounded">
-    <p class="text-slate-400">Yesterday</p>
-    <p id="yOrders" class="text-xl font-bold">0</p>
-    <p id="yMoney" class="text-green-400">₹0</p>
+  <div class="bg-gray-800 p-4 rounded-xl glow border border-purple-400 text-center">
+    <h3>Yesterday</h3>
+    <p id="yOrders" class="text-3xl font-bold text-purple-400">0</p>
+    <p id="yMoney" class="text-lg text-green-400">₹0</p>
   </div>
 
-  <div class="bg-slate-800 p-5 rounded">
-    <p class="text-slate-400">Monthly</p>
-    <p id="mOrders" class="text-xl font-bold">0</p>
-    <p id="mMoney" class="text-green-400">₹0</p>
+  <div class="bg-gray-800 p-4 rounded-xl glow border border-blue-400 text-center">
+    <h3>Monthly Orders</h3>
+    <p id="mOrders" class="text-3xl font-bold text-blue-400">0</p>
+    <p id="mMoney" class="text-lg text-green-400">₹0</p>
   </div>
-</section>
 
-<!-- LOW STOCK -->
-<section class="max-w-7xl mx-auto px-6 mt-6">
-  <div class="bg-slate-800 p-4 rounded">
-    <h3 class="font-semibold text-red-400 mb-2">Low Stock (≤ 5)</h3>
-    <ul id="lowStockList" class="text-sm space-y-1"></ul>
+</div>
+
+<!-- LOW STOCK ALERT -->
+<div class="p-4">
+  <div class="bg-gray-800 p-4 rounded-xl border border-red-400 glow">
+    <h3 class="font-bold text-red-400 mb-2">
+      ⚠️ Low Stock Items (≤ 5)
+    </h3>
+
+    <ul id="lowStockList" class="text-sm text-gray-300 space-y-1">
+      <li>Loading...</li>
+    </ul>
   </div>
-</section>
+</div>
 
-<!-- PROMOTIONS -->
-<section class="max-w-7xl mx-auto px-6 mt-6">
-  <div class="bg-slate-800 p-4 rounded">
-    <h3 class="font-semibold mb-3">Send Promotion</h3>
 
-    <input id="promoImage" placeholder="Poster Image URL"
-      class="w-full p-2 rounded text-black mb-3">
-
-    <div class="flex gap-2">
-      <button onclick="addPromo()" class="bg-yellow-400 text-black px-4 py-2 rounded">
-        Add Poster
-      </button>
-      <button onclick="sendPromo(event)" class="bg-slate-700 px-4 py-2 rounded">
-        Send Notification
-      </button>
-    </div>
-  </div>
-</section>
 
 <script src="../js/config.js"></script>
+
 <script src="../js/authGuard.js"></script>
-<script>checkAuth("owner");</script>
+<script>
+  checkAuth("owner");
+</script>
+
+
 <script src="../js/ownerDashboard.js"></script>
 
 <script>
 function logout(){
   localStorage.clear();
-  location.href="../login.html";
+  window.location.href="../login.html";
 }
 </script>
 
