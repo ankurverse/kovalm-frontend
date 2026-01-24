@@ -1,48 +1,71 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <title>JBD Mart · Owner Orders</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-body { font-family: 'Poppins'; }
-.glow { box-shadow: 0 0 20px rgba(255,255,0,0.3); }
-</style>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a; /* slate-900 */
+      color: #e5e7eb; /* slate-200 */
+    }
 
+    /* Header */
+    .page-header {
+      background: linear-gradient(180deg, #020617, #020617);
+      border-bottom: 1px solid #1e293b;
+    }
+
+    /* Sub info bar */
+    .info-strip {
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5f5;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+  </style>
 </head>
 
-<body class="bg-gray-900 text-white">
+<body>
 
 <!-- HEADER -->
-<div class="p-4 bg-gray-800 shadow-lg border-b border-yellow-400 glow flex justify-between items-center">
-  <h2 class="text-2xl font-bold text-yellow-400">JBD Mart – Owner Panel</h2>
+<header class="page-header px-6 py-4 flex justify-between items-center">
+  <h2 class="text-xl font-bold text-yellow-400">
+    JBD Mart · Owner Orders
+  </h2>
 
-  <button onclick="logout()"
-  class="bg-red-500 px-4 py-2 rounded font-bold">
+  <button
+    onclick="logout()"
+    class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded font-semibold text-sm"
+  >
     Logout
   </button>
-</div>
+</header>
 
 <!-- INFO STRIP -->
-<div class="bg-yellow-400 text-black text-center py-2 font-bold animate-pulse">
-   Manage Orders   |    Accept    |   Prepare   |   Deliver
+<div class="info-strip text-center py-2">
+  Manage Orders · Accept · Prepare · Deliver
 </div>
 
-<div id="orders" class="p-4"></div>
-<script src="../js/config.js"></script>
+<!-- ORDERS -->
+<div id="orders" class="p-6 space-y-4"></div>
 
+<script src="../js/config.js"></script>
 <script src="../js/authGuard.js"></script>
 <script>
   checkAuth("owner");
 </script>
-
-
 <script src="../js/ownerOrders.js"></script>
 
 <script>
-function logout(){
+function logout() {
   localStorage.clear();
-  window.location.href="../login.html";
+  window.location.href = "../login.html";
 }
 </script>
 
