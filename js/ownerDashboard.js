@@ -1,19 +1,18 @@
 let token = localStorage.getItem("token");
 let user = JSON.parse(localStorage.getItem("user"));
 
-if(!token || !user || user.role !== "owner"){
+if (!token || !user || user.role !== "owner") {
   alert("Access Denied");
-  window.location.href="../login.html";
+  window.location.href = "../login.html";
 }
 
+/* =========================
+   DASHBOARD ANALYTICS
+========================= */
 
-
-async function load(){
-
+async function load() {
   const res = await fetch(`${API_BASE}/orders/owner/super-analytics`, {
-    headers:{
-      "Authorization": `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const d = await res.json();
@@ -31,42 +30,37 @@ async function load(){
 
   document.getElementById("mOrders").innerText = d.month.orders;
   document.getElementById("mMoney").innerText = "₹" + d.month.earning;
-
-  document.getElementById("todayEarningBig").innerText =
-  "₹" + d.today.earning;
-
-
 }
 
-
-function downloadReport(){
-  fetch(`${API_BASE}/orders/owner/super-analytics`,{
-    headers:{ "Authorization": `Bearer ${token}` }
+function downloadReport() {
+  fetch(`${API_BASE}/orders/owner/super-analytics`, {
+    headers: { Authorization: `Bearer ${token}` }
   })
-  .then(res => res.json())
-  .then(d => {
-    let csv = "OrderID,Status,Total,Date\n";
-    d.orders.forEach(o=>{
-      csv += `${o._id},${o.status},${o.totalAmount},${new Date(o.createdAt).toLocaleString()}\n`;
-    });
+    .then(res => res.json())
+    .then(d => {
+      let csv = "OrderID,Status,Total,Date\n";
+      d.orders.forEach(o => {
+        csv += `${o._id},${o.status},${o.totalAmount},${new Date(o.createdAt).toLocaleString()}\n`;
+      });
 
-    const blob = new Blob([csv],{type:"text/csv"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "Cafe_Report.csv";
-    a.click();
-  });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Cafe_Report.csv";
+      a.click();
+    });
 }
+
+/* =========================
+   STORE OPEN / CLOSE
+========================= */
 
 async function loadOrderStatus() {
   const res = await fetch(`${API_BASE}/orders/owner/status`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
   const data = await res.json();
-
   document.getElementById("orderStatus").innerText =
     data.isAcceptingOrders
       ? "🟢 JBD Mart is OPEN for orders"
@@ -97,9 +91,12 @@ async function closeOrders() {
   loadOrderStatus();
 }
 
-load();
-loadOrderStatus();
-setInterval(load,5000);
+/* =========================
+   LOW STOCK LOGIC
+========================= */
+
+let cachedLowStock = [];
+let showAllLowStock = false;
 
 async function loadLowStock() {
   const res = await fetch(`${API_BASE}/products/owner/all`, {
@@ -107,12 +104,23 @@ async function loadLowStock() {
   });
 
   const products = await res.json();
+
+  cachedLowStock = products
+    .filter(p => p.quantity <= 5)
+    .sort((a, b) => a.quantity - b.quantity);
+
+  renderLowStockTable();
+}
+
+function renderLowStockTable() {
   const table = document.getElementById("lowStockTable");
   table.innerHTML = "";
 
-  const lowStock = products.filter(p => p.quantity <= 5);
+  const list = showAllLowStock
+    ? cachedLowStock
+    : cachedLowStock.slice(0, 5);
 
-  if (lowStock.length === 0) {
+  if (list.length === 0) {
     table.innerHTML = `
       <tr>
         <td colspan="3" class="py-3 text-center text-green-400">
@@ -123,30 +131,37 @@ async function loadLowStock() {
     return;
   }
 
-  lowStock.forEach(p => {
+  list.forEach(p => {
     const status =
       p.quantity === 0
         ? `<span class="px-2 py-1 text-xs rounded bg-red-600 text-white">Out</span>`
         : `<span class="px-2 py-1 text-xs rounded bg-yellow-500 text-black">Low</span>`;
 
     table.innerHTML += `
-      <tr>
+      <tr class="hover:bg-slate-700 cursor-pointer"
+          onclick="goToInventory('${encodeURIComponent(p.name)}')">
         <td class="py-2">${p.name}</td>
-        <td class="py-2 text-center font-bold text-yellow-400">
-          ${p.quantity}
-        </td>
-        <td class="py-2 text-center">
-          ${status}
-        </td>
+        <td class="py-2 text-center font-bold text-yellow-400">${p.quantity}</td>
+        <td class="py-2 text-center">${status}</td>
       </tr>
     `;
   });
 }
 
+function toggleLowStockView() {
+  showAllLowStock = !showAllLowStock;
+  document.getElementById("toggleLowStockBtn").innerText =
+    showAllLowStock ? "Show Top 5" : "View All";
+  renderLowStockTable();
+}
 
-loadLowStock();
-setInterval(loadLowStock, 5000);
+function goToInventory(productName) {
+  window.location.href = `inventory.html?search=${productName}`;
+}
 
+/* =========================
+   PROMOTIONS
+========================= */
 
 function sendPromo(event) {
   const title = prompt("Enter notification title:");
@@ -163,22 +178,16 @@ function sendPromo(event) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + localStorage.getItem("token")
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({ title, body })
   })
-  .then(res => res.json())
-  .then(() => {
-    alert("Notification sent successfully!");
-  })
-  .catch(err => {
-    alert("Failed to send notification");
-    console.error(err);
-  })
-  .finally(() => {
-    btn.disabled = false;
-    btn.innerText = "📢 Send Notification";
-  });
+    .then(() => alert("Notification sent successfully!"))
+    .catch(() => alert("Failed to send notification"))
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerText = "📢 Send Notification";
+    });
 }
 
 async function addPromo() {
@@ -198,3 +207,13 @@ async function addPromo() {
   document.getElementById("promoImage").value = "";
 }
 
+/* =========================
+   INIT
+========================= */
+
+load();
+loadOrderStatus();
+loadLowStock();
+
+setInterval(load, 5000);
+setInterval(loadLowStock, 5000);

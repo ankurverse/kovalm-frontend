@@ -220,5 +220,21 @@ async function downloadInventory() {
   a.click();
 }
 
+
+
+function applySearchFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const search = params.get("search");
+
+  if (search) {
+    const input = document.getElementById("searchInput");
+    input.value = decodeURIComponent(search);
+    filterProducts();
+  }
+}
+
 /* ================= INIT ================= */
-loadProducts();
+loadProducts().then(applySearchFromURL);
+
+
+
